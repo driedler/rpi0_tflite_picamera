@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"name": "Raspberry Pi 0 -Tflite Picamera",
+			"path": "."
+		}
+	],
+	"extensions": {
+		"recommendations": [
+			"ms-python.python"
+		]
+	},
+	"settings": {
+		"python.pythonPath": ".venv\\Scripts\\python.exe",
+	},
+}
