@@ -184,7 +184,7 @@ Where `<network drive>` is the mounted network drive from step 1.
 This will setup the local Python environment as well as RPI0 environment.
 In will also configure the VSCode workspace file.
 
-See the [workspace_setup.py](./workspace_setup.py) for more details.
+See the [setup_workspace.py](./setup_workspace.py) for more details.
 
 
 ## 3) Open VSCode Workspace
