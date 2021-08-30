@@ -42,19 +42,29 @@ def main():
 	standardize=True
   )
 
-  with picamera.PiCamera(resolution=(640, 480), framerate=30) as camera:
-    camera.zoom = 0., 0., roi_w/640, roi_h/480
+  with picamera.PiCamera(resolution=(640, 480), framerate=43) as camera:
+    
     camera.start_preview()
     try:
+      x = 100/640
+      y = 100/480
+      w = 200/640
+      h = 115/480
+      camera.zoom = x, y, w, h
+
       stream = io.BytesIO()
       for _ in camera.capture_continuous(
           stream, format='jpeg', use_video_port=True):
         stream.seek(0)
 
+        
+
         # Read the image into a buffer
         im_buf = np.frombuffer(stream.read(), np.uint8)
         # Convert the image from JPG to numpy
         im = cv2.imdecode(im_buf, cv2.IMREAD_COLOR)
+
+        # print(f'shape={im.shape} zoom={camera.zoom}')
         # Perform a perspective transform on the image
         # then standardize the image
         x = img_xfrm.invoke(im)

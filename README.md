@@ -34,35 +34,46 @@ https://www.raspberrypi.org/products/camera-module-v2/
 ## 1) Program Raspberry Pi OS to SD Card 
 
 Plug the SD card in your computer's SD card reader, then  
-use the Raspberry PI Imager to program RPI OS to your micro SD card:  
+use the Raspberry PI Imager to program RPI OS-Lite to your micro SD card:  
 https://www.raspberrypi.org/software/
 
-It's recommended to start with the default OS (with desktop support) before getting crazy with RPI OS-lite.
+Select the __RPI OS-Lite__ image.
 
-## 2) Enable network over USB
+## 2) Configure RaspberryPI Boot Config
 
-After programming RPI OS from setup 1, unplug the SD card, then plugin it back into your computer.
+After programming RPI OS-Lite from setup 1, unplug the SD card, then plugin it back into your computer.
 Go to your file explorer, you should see the SD card be mounted as a new drive (at least on Windows)
 with a description as: `boot`.
 
-Open the SD card 'boot' drive and edit the following files in the root of the SD card:
+Open the SD card 'boot' drive and create the following files in the root of the SD card:
 
-__config.txt:__  
-Open `config.txt` and to the end add:
-```
-dtoverlay=dwc2
-```
-More details about config.txt here:  
-https://www.raspberrypi.org/documentation/configuration/config-txt/
+__wpa_supplicant.conf:__ 
+Create the the file `wpa_supplicant.conf` and copy and paste the following to the file.
+Be sure to update `NAME OF YOUR WIFI` and  `WIFI PASSWORD` with your local Wi-Fi network's info.
 
-__cmdline.txt:__  
-Open `cmdline.txt`, just after `rootwait` add:
 ```
-modules-load=dwc2,g_ether
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=GB
+
+network={
+    ssid="NAME OF YOUR WIFI"
+    psk="WIFI PASSWORD"
+    scan_ssid=1
+}
 ```
 
 __ssh__   
 Create empty file named `ssh` in root of the SD card
+
+__config.txt__
+Open the file `config.txt` and uncomment the following entries to enable the PiCamera:
+```
+start_x=1             # essential
+gpu_mem=128           # at least, or maybe more if you wish
+disable_camera_led=1  # optional, if you don't want the led to glow
+```
+
 
 ## 3) Install mDNS onto your computer
 
@@ -80,14 +91,11 @@ Unmount the SD card an plug it into the RPI.
 Then plug the USB micro into the RPI's `USB` port (_not_ PWR) and the other side into your computer.
 
 
-## 5) Configure sharing on your Windows network adapter so Pi can see the Internet
-Go somewhere around __Control Panel -> Network and Internet -> Network Connections__  
-Double click your default network connection, click Properties..., tab Sharing
-
-
-## 6) Open an SSH session to the RPI
+## 5) Open an SSH session to the RPI
 
 On Windows, PuTTY is recommended: http://www.putty.org/
+
+Wait until the green LED on the RPI0 is solid green before continuing.
 
 Connect over SSH (port 22) with connection string: `pi@raspberrypi.local`   
 Accept certificate  
@@ -103,44 +111,9 @@ sudo apt-get install putty-tools
 NOTE: The `plink` command is used by the scripts in this project.
 
 
-## 7) Configure Wi-Fi
+## 6) Update Pi, install samba, config samba
 
-From the SSH session, issue the command:
-
-```
-sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
-```
-From the opened file editor, add the following to the end:
-
-```
-network={
-  ssid="MY_NETWORK_NAME"
-  psk="MY_NETWORK_PASSWORD"
-}
-```
-Updating `MY_NETWORK_NAME` and `MY_NETWORK_PASSWORD` with your Wi-Fi info.
-
-Then, `Ctrl+O` to save, `Ctrl+X` to exit nano.
-
-Next, issue the command:
-
-```
-sudo wpa_cli reconfigure
-```
-
-Then issue the command:
-
-```
-sudo reboot
-```
-
-This will reboot the RPI and close your SSH session. 
-You'll need to start a new SSH session for the subsequent steps.
-
-
-## 8) Update Pi, install samba, config samba
-
-From the RPI SSH session (step 7), issue the commands:
+From the RPI SSH session (step 5), issue the commands:
 
 ```
 sudo apt-get update
@@ -178,9 +151,9 @@ __NOTE:__ While useful for development, this opens a __major security hole__ int
 Do NOT do the above if you're on an unsecure network!!
 
 
-## 9) Resize your Pi partition to use all available space on SD card
+## 7) Resize your Pi partition to use all available space on SD card
 
-From the RPI SSH session (step 7), issue the commands:
+From the RPI SSH session (step 5), issue the commands:
 ```
 sudo raspi-config --expand-rootfs
 sudo reboot
@@ -197,7 +170,7 @@ After this is complete, you should have a new drive, e.g. `Z:\` that points to y
 This is required so we can easily sync the local workspace with the RPI's workspace.
 It also allows the VSCode Python indexer to search the RPI Python packages.
 
-After compeleting this step, you should be able to open the directory `Z:\` (or whatever drive letter you gave it) from your file explorer.
+After completing this step, you should be able to open the directory `Z:\` (or whatever drive letter you gave it) from your file explorer.
 
 ## 2) Run the setup script
 
@@ -208,7 +181,7 @@ python3 ./workspace_setup.py <network drive>
 ```
 
 Where `<network drive>` is the mounted network drive from step 1.  
-This will setup the local Python enviroment as well as RPI0 environment.
+This will setup the local Python environment as well as RPI0 environment.
 In will also configure the VSCode workspace file.
 
 See the [workspace_setup.py](./workspace_setup.py) for more details.
