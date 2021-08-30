@@ -20,8 +20,9 @@ pip3 install picamera
 # which is used to convert JPEG to numpy
 # NOTE: We need opencv 3.4.2.17 as that uses numpy-1.19 which is what 
 # tflite_micro_runtime uses
-pip3 install opencv-python==3.4.2.17
 pip3 install numpy>=1.19,<1.20
+pip3 install opencv-python==3.4.2.17
+
 
 # Install tflite_micro_runtime
 # https://github.com/driedler/tflite_micro_runtime
@@ -35,6 +36,6 @@ pip3 install https://github.com/driedler/tflite_micro_runtime/releases/download/
 echo "Creating workspace directory at /home/pi/rpi0_tflite_picamera"
 mkdir -p /home/pi/rpi0_tflite_picamera
 chmod 0777 /home/pi/rpi0_tflite_picamera
-chmod -R 0777 home/pi/.local/lib/python3.7/site-packages
-chmod -R 0777 usr/lib/python3/dist-packages
+sudo chmod -R 0777 /home/pi/.local/lib/python3.7/site-packages
+sudo chmod -R 0777 /usr/lib/python3/dist-packages
 
